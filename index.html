@@ -2,144 +2,563 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Peekashade — Who is hiding?</title>
-<meta name="description" content="Peekashade is a shadow-matching game for toddlers: twelve shows, 88 characters, no timers and no losing. $2.99, no ads, no in-app purchases.">
-<meta name="theme-color" content="#e8386f">
-<meta property="og:title" content="Peekashade — Who is hiding?">
-<meta property="og:description" content="Peekashade is a shadow-matching game for toddlers: twelve shows, 88 characters, no timers and no losing. $2.99, no ads, no in-app purchases.">
-<meta property="og:image" content="img/1.png">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Peekashade — A shadow theatre for little hands</title>
+<meta name="description" content="Peekashade is a shadow-matching game for toddlers aged 2–4: twelve little shows, 88 hand-drawn friends, no timers and no losing. $2.99, no ads, no in-app purchases.">
 <link rel="icon" href="img/icon.png">
+<link rel="canonical" href="https://xavierbasc.github.io/peekashade-website/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Peekashade — A shadow theatre for little hands">
+<meta property="og:description" content="Twelve little shows. Drag each character onto its shadow, and the curtain rises on the next one. Ages 2–4. No ads, no in-app purchases.">
+<meta property="og:image" content="https://xavierbasc.github.io/peekashade-website/img/1.png">
+<meta property="og:url" content="https://xavierbasc.github.io/peekashade-website/">
+<meta name="twitter:card" content="summary_large_image">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Nunito+Sans:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap">
+
+<!-- Pintado base en línea: el CDN de Tailwind llega un instante después y sin
+     esto la primera pintada sale en blanco sobre serif del sistema. -->
+<style>
+  :root{
+    --night:#131a35; --night-2:#1c2547; --curtain:#e8386f; --curtain-dk:#b62453;
+    --foot:#ffc24a; --cream:#fdf4e6; --cream-2:#f6e9d5; --shadow:#6b5b95;
+    --ink:#2c1630; --ink-soft:#6f5470;
+  }
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--cream);color:var(--ink);
+       font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+       -webkit-font-smoothing:antialiased}
+  h1,h2,h3,.display{font-family:Fredoka,ui-rounded,"Segoe UI Rounded",system-ui,sans-serif}
+  img,video{max-width:100%;height:auto;display:block}
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;
+                         transition-duration:.001ms!important}
+  }
+</style>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        night:{DEFAULT:'#131a35', 2:'#1c2547', 3:'#28325c'},
+        curtain:{DEFAULT:'#e8386f', dk:'#b62453'},
+        foot:'#ffc24a',
+        cream:{DEFAULT:'#fdf4e6', 2:'#f6e9d5', 3:'#ecdcc2'},
+        shade:'#6b5b95',
+        ink:{DEFAULT:'#2c1630', soft:'#6f5470'}
+      },
+      fontFamily:{
+        display:['Fredoka','ui-rounded','Segoe UI Rounded','system-ui','sans-serif'],
+        body:['Inter','system-ui','-apple-system','sans-serif']
+      },
+      boxShadow:{
+        stage:'0 30px 60px -20px rgba(19,26,53,.45)',
+        card:'0 2px 0 0 #ecdcc2, 0 12px 24px -16px rgba(44,22,48,.35)',
+        lift:'0 4px 0 0 #ecdcc2, 0 22px 34px -18px rgba(44,22,48,.45)'
+      },
+      keyframes:{
+        rise:{'0%':{opacity:0,transform:'translateY(14px)'},'100%':{opacity:1,transform:'none'}},
+        sway:{'0%,100%':{transform:'rotate(-1.2deg)'},'50%':{transform:'rotate(1.2deg)'}},
+        glow:{'0%,100%':{opacity:.55},'50%':{opacity:.85}}
+      },
+      animation:{
+        rise:'rise .7s cubic-bezier(.2,.7,.3,1) both',
+        sway:'sway 6s ease-in-out infinite',
+        glow:'glow 5s ease-in-out infinite'
+      }
+    }
+  }
+}
+</script>
+
+<style type="text/tailwindcss">
+  @layer components{
+    /* El acento vive en un sitio: el telón. Todo lo demás calla. */
+    .btn-curtain{
+      @apply inline-flex items-center justify-center gap-2 rounded-full bg-curtain px-7 py-3.5
+             font-display font-semibold text-white shadow-[0_4px_0_0_#b62453] transition
+             hover:-translate-y-0.5 hover:shadow-[0_6px_0_0_#b62453] active:translate-y-0.5
+             active:shadow-[0_2px_0_0_#b62453] focus-visible:outline focus-visible:outline-2
+             focus-visible:outline-offset-4 focus-visible:outline-curtain;
+    }
+    .btn-ghost{
+      @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink/15
+             px-6 py-3 font-display font-medium text-ink transition hover:border-ink/35
+             hover:bg-cream-2 focus-visible:outline focus-visible:outline-2
+             focus-visible:outline-offset-4 focus-visible:outline-curtain;
+    }
+    .eyebrow{
+      @apply font-body text-[.72rem] font-semibold uppercase tracking-[.18em] text-ink-soft;
+    }
+    .card{
+      @apply rounded-3xl border border-cream-3 bg-white/70 p-6 shadow-card;
+    }
+    /* La mecánica del juego, hecha CSS: cada pieza proyecta su sombra. */
+    .casts-shadow{ @apply relative; }
+    .casts-shadow::after{
+      content:""; position:absolute; left:50%; bottom:-10px; width:62%; height:10px;
+      transform:translateX(-50%); border-radius:9999px;
+      background:radial-gradient(ellipse at center, rgba(107,91,149,.38), transparent 70%);
+    }
+  }
+</style>
 </head>
-<body>
-<header class="nav">
-  <div class="wrap">
-    <a class="logo" href="index.html"><img src="img/icon.png" alt=""> Peekashade</a>
-    <nav>
-      <a href="index.html#features">Features</a>
-      <a href="index.html#parents">For parents</a>
-      <a href="index.html#faq">FAQ</a>
-      <a class="cta" href="index.html#get">Where to play</a>
+
+<body class="font-body antialiased">
+
+<a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-night focus:px-5 focus:py-3 focus:text-white">Skip to content</a>
+
+<!-- ───────────────────────── Nav ───────────────────────── -->
+<header class="sticky top-0 z-40 border-b border-cream-3/70 bg-cream/85 backdrop-blur">
+  <nav class="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
+    <a href="#top" class="flex shrink-0 items-center gap-2.5">
+      <img src="img/icon.png" alt="" width="36" height="36" class="rounded-xl shadow-sm">
+      <span class="font-display text-lg font-semibold tracking-tight">Peekashade</span>
+    </a>
+    <div class="ml-auto hidden items-center gap-7 md:flex">
+      <a href="#parents" class="text-sm font-medium text-ink-soft transition hover:text-ink">For parents</a>
+      <a href="#faq" class="text-sm font-medium text-ink-soft transition hover:text-ink">FAQ</a>
+      <a href="#play" class="text-sm font-medium text-ink-soft transition hover:text-ink">Where to play</a>
+    </div>
+    <a href="#play" class="btn-curtain ml-auto px-5 py-2.5 text-sm md:ml-0">Get&nbsp;·&nbsp;$2.99</a>
+  </nav>
+</header>
+
+<main id="main">
+
+<!-- ─────────────────────── Hero: el proscenio ─────────────────────── -->
+<section id="top" class="relative overflow-hidden bg-night text-cream">
+  <!-- candilejas -->
+  <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-72 animate-glow
+              bg-[radial-gradient(ellipse_60%_100%_at_50%_100%,rgba(255,194,74,.30),transparent_70%)]"></div>
+  <!-- telones -->
+  <div aria-hidden="true" class="pointer-events-none absolute inset-y-0 -left-10 hidden w-40 lg:block
+              bg-[repeating-linear-gradient(90deg,#b62453_0px,#e8386f_16px,#b62453_34px)]
+              [mask-image:linear-gradient(90deg,#000_55%,transparent)] opacity-90"></div>
+  <div aria-hidden="true" class="pointer-events-none absolute inset-y-0 -right-10 hidden w-40 lg:block
+              bg-[repeating-linear-gradient(270deg,#b62453_0px,#e8386f_16px,#b62453_34px)]
+              [mask-image:linear-gradient(270deg,#000_55%,transparent)] opacity-90"></div>
+
+  <div class="relative mx-auto max-w-6xl px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20">
+    <div class="mx-auto max-w-3xl text-center">
+      <p class="eyebrow animate-rise text-foot">Ages 2–4 · one payment</p>
+      <h1 class="mt-4 animate-rise text-balance font-display text-4xl font-semibold leading-[1.08] tracking-tight sm:text-6xl"
+          style="animation-delay:.06s">
+        A shadow theatre<br class="hidden sm:block"> for little hands
+      </h1>
+      <p class="mx-auto mt-5 max-w-xl animate-rise text-pretty text-base leading-relaxed text-cream/75 sm:text-lg"
+         style="animation-delay:.12s">
+        Every shadow is waiting for its friend. Twelve little shows. Drag each
+        character onto its shadow, and the curtain rises on the next one.
+      </p>
+      <div class="mt-8 flex animate-rise flex-wrap items-center justify-center gap-3" style="animation-delay:.18s">
+        <a href="#play" class="btn-curtain text-base">Get Peekashade · $2.99</a>
+        <a href="#motion" class="btn-ghost border-cream/25 text-cream hover:border-cream/50 hover:bg-white/5">
+          See it in motion
+        </a>
+      </div>
+    </div>
+
+    <!-- el escenario -->
+    <figure id="motion" class="mx-auto mt-12 max-w-4xl scroll-mt-24 animate-rise sm:mt-16" style="animation-delay:.24s">
+      <div class="overflow-hidden rounded-[1.75rem] border-4 border-foot/25 bg-night-2 shadow-stage">
+        <video class="aspect-[16/9] w-full bg-night-2" poster="img/1.png"
+               controls playsinline preload="metadata" muted loop>
+          <source src="img/preview.mp4" type="video/mp4">
+          <img src="img/1.png" alt="The ticket booth in Peekashade, with twelve show posters.">
+        </video>
+      </div>
+      <figcaption class="mt-3 text-center text-sm text-cream/55">
+        Twenty seconds of the real game, recorded on device.
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- suelo del escenario -->
+  <div aria-hidden="true" class="h-3 w-full bg-gradient-to-b from-foot/20 to-transparent"></div>
+</section>
+
+<!-- ─────────────────────── What's inside ─────────────────────── -->
+<section class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+  <div class="mx-auto max-w-2xl text-center">
+    <p class="eyebrow">What's inside</p>
+    <h2 class="mt-3 text-balance font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+      A little theatre that never says no
+    </h2>
+    <p class="mt-4 text-pretty text-lg leading-relaxed text-ink-soft">
+      Made for the age when everything is still a first try.
+    </p>
+  </div>
+
+  <!-- la promesa, en una línea -->
+  <ul class="mx-auto mt-8 flex max-w-3xl flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm font-medium">
+    <li class="rounded-full bg-cream-2 px-4 py-1.5">Ages 2–4</li>
+    <li class="rounded-full bg-cream-2 px-4 py-1.5">One payment of $2.99</li>
+    <li class="rounded-full bg-cream-2 px-4 py-1.5">No ads</li>
+    <li class="rounded-full bg-cream-2 px-4 py-1.5">No in-app purchases</li>
+  </ul>
+
+  <div class="mt-14 grid gap-10 lg:grid-cols-[1.05fr_1fr] lg:items-start lg:gap-16">
+    <!-- doce funciones -->
+    <div>
+      <h3 class="font-display text-2xl font-semibold">Twelve shows</h3>
+      <p class="mt-2 max-w-md text-ink-soft">
+        Each one its own stage, its own cast and its own set of stars to earn.
+        MIX shuffles them all together.
+      </p>
+      <ol class="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-3">
+        <li class="rounded-2xl border border-cream-3 bg-white/60 px-3.5 py-2.5 text-sm font-medium">Farm</li>
+        <li class="rounded-2xl border border-cream-3 bg-white/60 px-3.5 py-2.5 text-sm font-medium">Jungle</li>
+        <li class="rounded-2xl border border-cream-3 bg-white/60 px-3.5 py-2.5 text-sm font-medium">Ocean</li>
+        <li class="rounded-2xl border border-cream-3 bg-white/60 px-3.5 py-2.5 text-sm font-medium">On the road</li>
+        <li class="rounded-2xl border border-cream-3 bg-white/60 px-3.5 py-2.5 text-sm font-medium">Up and away</li>
+        <li class="rounded-2xl border border-cream-3 bg-white/60 px-3.5 py-2.5 text-sm font-medium">Music</li>
+        <li class="rounded-2xl border border-cream-3 bg-white/60 px-3.5 py-2.5 text-sm font-medium">Bugs</li>
+        <li class="rounded-2xl border border-cream-3 bg-white/60 px-3.5 py-2.5 text-sm font-medium">Yummy</li>
+        <li class="rounded-2xl border border-cream-3 bg-white/60 px-3.5 py-2.5 text-sm font-medium">Dinosaurs</li>
+        <li class="rounded-2xl border border-cream-3 bg-white/60 px-3.5 py-2.5 text-sm font-medium">At home</li>
+        <li class="rounded-2xl border border-cream-3 bg-white/60 px-3.5 py-2.5 text-sm font-medium">Weather</li>
+        <li class="rounded-2xl border-2 border-curtain/35 bg-curtain/5 px-3.5 py-2.5 text-sm font-semibold text-curtain-dk">MIX</li>
+      </ol>
+
+      <div class="mt-8 flex items-center gap-5 rounded-3xl border border-cream-3 bg-white/70 p-5 shadow-card">
+        <p class="font-display text-5xl font-bold leading-none text-curtain tabular-nums">88</p>
+        <p class="text-sm leading-relaxed text-ink-soft">
+          <span class="font-semibold text-ink">friends, 88 sounds.</span>
+          Every character is drawn and synthesised from scratch: the cow moos,
+          the bee buzzes, the kettle whistles, the T.&nbsp;rex roars.
+        </p>
+      </div>
+    </div>
+
+    <!-- cómo se porta el juego -->
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+      <div class="card">
+        <h3 class="font-display text-lg font-semibold">Nobody loses</h3>
+        <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">
+          No timer, no score, no game over. A wrong drop wobbles and comes back.
+        </p>
+      </div>
+      <div class="card">
+        <h3 class="font-display text-lg font-semibold">A generous snap</h3>
+        <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">
+          No rotation. Land a piece near its shadow and it clicks into place.
+        </p>
+      </div>
+      <div class="card">
+        <h3 class="font-display text-lg font-semibold">Pieces grow as they lift</h3>
+        <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">
+          They rise above the finger, so a small hand never covers what it is carrying.
+        </p>
+      </div>
+      <div class="card">
+        <h3 class="font-display text-lg font-semibold">A nudge, never a nag</h3>
+        <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">
+          If nobody plays for a while, the next piece waves to help.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- capturas -->
+  <div class="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <figure class="overflow-hidden rounded-3xl border border-cream-3 bg-white shadow-card">
+      <img src="img/1.png" alt="The ticket booth: twelve posters, each with stars for the shows already finished." loading="lazy" width="1400" height="787">
+      <figcaption class="px-4 py-3 text-sm text-ink-soft">The ticket booth</figcaption>
+    </figure>
+    <figure class="overflow-hidden rounded-3xl border border-cream-3 bg-white shadow-card">
+      <img src="img/2.png" alt="The jungle show, with a lion beside its violet shadow." loading="lazy" width="1400" height="787">
+      <figcaption class="px-4 py-3 text-sm text-ink-soft">Jungle</figcaption>
+    </figure>
+    <figure class="overflow-hidden rounded-3xl border border-cream-3 bg-white shadow-card">
+      <img src="img/3.png" alt="The dinosaur show in progress." loading="lazy" width="1400" height="787">
+      <figcaption class="px-4 py-3 text-sm text-ink-soft">Dinosaurs</figcaption>
+    </figure>
+    <figure class="overflow-hidden rounded-3xl border border-cream-3 bg-white shadow-card">
+      <img src="img/4.png" alt="The farm show, with the curtain raised." loading="lazy" width="1400" height="787">
+      <figcaption class="px-4 py-3 text-sm text-ink-soft">Farm</figcaption>
+    </figure>
+    <figure class="overflow-hidden rounded-3xl border border-cream-3 bg-white shadow-card">
+      <img src="img/5.png" alt="Everyone jumps up for a BRAVO at the end of a show." loading="lazy" width="1400" height="787">
+      <figcaption class="px-4 py-3 text-sm text-ink-soft">Bravo</figcaption>
+    </figure>
+    <figure class="overflow-hidden rounded-3xl border border-cream-3 bg-white shadow-card">
+      <img src="img/6.png" alt="The yummy show, full of food characters." loading="lazy" width="1400" height="787">
+      <figcaption class="px-4 py-3 text-sm text-ink-soft">Yummy</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ─────────────────────── How it works ─────────────────────── -->
+<section class="bg-night text-cream">
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+    <div class="mx-auto max-w-2xl text-center">
+      <p class="eyebrow text-foot">How it works</p>
+      <h2 class="mt-3 text-balance font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+        Three taps and a toddler is playing on their own
+      </h2>
+    </div>
+
+    <!-- Numerado a propósito: aquí el orden SÍ es información — es la secuencia
+         de una función, de la taquilla al saludo final. -->
+    <ol class="mt-12 grid gap-6 md:grid-cols-3">
+      <li class="rounded-3xl border border-white/10 bg-white/[.04] p-7">
+        <span class="font-display text-sm font-semibold tracking-[.2em] text-foot">STEP 1</span>
+        <h3 class="mt-3 font-display text-xl font-semibold">Pick a show</h3>
+        <p class="mt-2 text-sm leading-relaxed text-cream/70">
+          Twelve posters at the ticket booth, each with its own stage and stars
+          for the shows already done.
+        </p>
+      </li>
+      <li class="rounded-3xl border border-white/10 bg-white/[.04] p-7">
+        <span class="font-display text-sm font-semibold tracking-[.2em] text-foot">STEP 2</span>
+        <h3 class="mt-3 font-display text-xl font-semibold">Drag a piece</h3>
+        <p class="mt-2 text-sm leading-relaxed text-cream/70">
+          Pieces grow as they lift and rise above the finger, so nothing is hidden.
+        </p>
+      </li>
+      <li class="rounded-3xl border border-white/10 bg-white/[.04] p-7">
+        <span class="font-display text-sm font-semibold tracking-[.2em] text-foot">STEP 3</span>
+        <h3 class="mt-3 font-display text-xl font-semibold">Take a bow</h3>
+        <p class="mt-2 text-sm leading-relaxed text-cream/70">
+          Complete the stage and everyone jumps up for a BRAVO before the
+          curtain falls.
+        </p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ─────────────────────── For parents ─────────────────────── -->
+<section id="parents" class="scroll-mt-20">
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+    <div class="mx-auto max-w-2xl text-center">
+      <p class="eyebrow">For parents</p>
+      <h2 class="mt-3 text-balance font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+        Built to hand over
+      </h2>
+      <p class="mt-4 text-pretty text-lg leading-relaxed text-ink-soft">
+        You should be able to pass the tablet across the table without
+        thinking twice about it.
+      </p>
+    </div>
+
+    <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="card casts-shadow">
+        <h3 class="font-display text-lg font-semibold">No ads, ever</h3>
+        <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">Nothing blinks, nothing interrupts, nothing sells.</p>
+      </div>
+      <div class="card casts-shadow">
+        <h3 class="font-display text-lg font-semibold">No in-app purchases</h3>
+        <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">One payment. Nothing is locked behind a paywall.</p>
+      </div>
+      <div class="card casts-shadow">
+        <h3 class="font-display text-lg font-semibold">No data collected</h3>
+        <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">No accounts, no analytics, no tracking of any kind.</p>
+      </div>
+      <div class="card casts-shadow">
+        <h3 class="font-display text-lg font-semibold">Works offline</h3>
+        <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">There is no network code at all: fine on a plane or in the car.</p>
+      </div>
+      <div class="card casts-shadow">
+        <h3 class="font-display text-lg font-semibold">Gentle sound</h3>
+        <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">Music sits low under the effects, and each has its own slider.</p>
+      </div>
+      <div class="card casts-shadow">
+        <h3 class="font-display text-lg font-semibold">Grown-up gate</h3>
+        <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">Settings and quitting need a two-second press to open.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────── Where to play ─────────────────────── -->
+<section id="play" class="scroll-mt-20 bg-cream-2/60">
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+    <div class="mx-auto max-w-2xl text-center">
+      <p class="eyebrow">Where to play</p>
+      <h2 class="mt-3 text-balance font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+        One payment, every screen you own
+      </h2>
+      <p class="mt-4 text-pretty text-lg leading-relaxed text-ink-soft">
+        Buy it once on the App Store and it works on iPhone, iPad and Mac with
+        the same Apple Account.
+      </p>
+    </div>
+
+    <ul class="mx-auto mt-12 grid max-w-4xl gap-3 sm:grid-cols-2">
+      <li class="flex items-center gap-4 rounded-3xl border border-cream-3 bg-white/80 p-5 shadow-card">
+        <div class="min-w-0">
+          <p class="font-display text-lg font-semibold">iPhone &amp; iPad</p>
+          <p class="text-sm text-ink-soft">iOS 15 or later</p>
+        </div>
+        <span class="ml-auto shrink-0 rounded-full bg-foot/20 px-3 py-1 text-xs font-semibold text-ink">Coming soon</span>
+      </li>
+      <li class="flex items-center gap-4 rounded-3xl border border-cream-3 bg-white/80 p-5 shadow-card">
+        <div class="min-w-0">
+          <p class="font-display text-lg font-semibold">Mac</p>
+          <p class="text-sm text-ink-soft">macOS 11 or later</p>
+        </div>
+        <span class="ml-auto shrink-0 rounded-full bg-foot/20 px-3 py-1 text-xs font-semibold text-ink">Coming soon</span>
+      </li>
+      <li class="flex items-center gap-4 rounded-3xl border border-cream-3 bg-white/50 p-5">
+        <div class="min-w-0">
+          <p class="font-display text-lg font-semibold">Windows</p>
+          <p class="text-sm text-ink-soft">Windows 10 or later</p>
+        </div>
+        <span class="ml-auto shrink-0 rounded-full bg-cream-3 px-3 py-1 text-xs font-semibold text-ink-soft">Coming soon</span>
+      </li>
+      <li class="flex items-center gap-4 rounded-3xl border border-cream-3 bg-white/50 p-5">
+        <div class="min-w-0">
+          <p class="font-display text-lg font-semibold">Linux</p>
+          <p class="text-sm text-ink-soft">.deb and tar.gz</p>
+        </div>
+        <span class="ml-auto shrink-0 rounded-full bg-cream-3 px-3 py-1 text-xs font-semibold text-ink-soft">Coming soon</span>
+      </li>
+      <li class="flex items-center gap-4 rounded-3xl border border-cream-3 bg-white/50 p-5 sm:col-span-2">
+        <div class="min-w-0">
+          <p class="font-display text-lg font-semibold">Android</p>
+          <p class="text-sm text-ink-soft">Phones and tablets</p>
+        </div>
+        <span class="ml-auto shrink-0 rounded-full bg-cream-3 px-3 py-1 text-xs font-semibold text-ink-soft">Coming soon</span>
+      </li>
+    </ul>
+
+    <p class="mx-auto mt-8 max-w-md text-center text-sm text-ink-soft">
+      Peekashade is waiting on review. This page will carry the store links the
+      day it is approved.
+    </p>
+  </div>
+</section>
+
+<!-- ─────────────────────── FAQ ─────────────────────── -->
+<section id="faq" class="scroll-mt-20">
+  <div class="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-24">
+    <div class="text-center">
+      <p class="eyebrow">Questions</p>
+      <h2 class="mt-3 text-balance font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+        Before you buy
+      </h2>
+    </div>
+
+    <div class="mt-10 divide-y divide-cream-3 overflow-hidden rounded-3xl border border-cream-3 bg-white/70">
+      <details class="group" name="faq" open>
+        <summary class="flex cursor-pointer list-none items-center gap-4 p-6 font-display text-lg font-semibold
+                        transition hover:bg-cream-2/60 focus-visible:outline focus-visible:outline-2
+                        focus-visible:-outline-offset-2 focus-visible:outline-curtain">
+          What age is it for?
+          <svg class="ml-auto size-5 shrink-0 text-ink-soft transition-transform duration-300 group-open:rotate-45"
+               viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M10 4v12M4 10h12"/>
+          </svg>
+        </summary>
+        <p class="px-6 pb-6 text-ink-soft">
+          Two to four. Toddlers who can drag a finger will manage on their own;
+          younger ones enjoy the sounds with a grown-up.
+        </p>
+      </details>
+
+      <details class="group" name="faq">
+        <summary class="flex cursor-pointer list-none items-center gap-4 p-6 font-display text-lg font-semibold
+                        transition hover:bg-cream-2/60 focus-visible:outline focus-visible:outline-2
+                        focus-visible:-outline-offset-2 focus-visible:outline-curtain">
+          Is there any reading?
+          <svg class="ml-auto size-5 shrink-0 text-ink-soft transition-transform duration-300 group-open:rotate-45"
+               viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M10 4v12M4 10h12"/>
+          </svg>
+        </summary>
+        <p class="px-6 pb-6 text-ink-soft">
+          None. Everything is shapes, shadows and sound, so it works in any
+          language — and before any of them.
+        </p>
+      </details>
+
+      <details class="group" name="faq">
+        <summary class="flex cursor-pointer list-none items-center gap-4 p-6 font-display text-lg font-semibold
+                        transition hover:bg-cream-2/60 focus-visible:outline focus-visible:outline-2
+                        focus-visible:-outline-offset-2 focus-visible:outline-curtain">
+          How long is a session?
+          <svg class="ml-auto size-5 shrink-0 text-ink-soft transition-transform duration-300 group-open:rotate-45"
+               viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M10 4v12M4 10h12"/>
+          </svg>
+        </summary>
+        <p class="px-6 pb-6 text-ink-soft">
+          As long as you like. Each show is a couple of minutes and rolls
+          straight into the next, so it is easy to stop after one.
+        </p>
+      </details>
+    </div>
+
+    <p class="mt-6 text-center text-sm text-ink-soft">
+      Something else? <a href="support.html" class="font-medium text-curtain-dk underline underline-offset-4 hover:text-curtain">Ask on the support page</a>.
+    </p>
+  </div>
+</section>
+
+<!-- ─────────────────────── Closer ─────────────────────── -->
+<section class="mx-auto max-w-6xl px-4 pb-16 sm:px-6 sm:pb-24">
+  <div class="relative overflow-hidden rounded-[2rem] bg-night px-6 py-14 text-center text-cream sm:px-12 sm:py-20">
+    <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-40
+                bg-[radial-gradient(ellipse_60%_100%_at_50%_100%,rgba(255,194,74,.28),transparent_70%)]"></div>
+    <div class="relative">
+      <h2 class="text-balance font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+        Ready for the first show?
+      </h2>
+      <p class="mx-auto mt-4 max-w-md text-pretty text-cream/75">
+        One payment. Works on iPhone, iPad and Mac.
+      </p>
+      <a href="#play" class="btn-curtain mt-8 text-base">Get Peekashade · $2.99</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ─────────────────────── Footer ─────────────────────── -->
+<footer class="border-t border-cream-3">
+  <div class="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:flex-row sm:items-center sm:px-6">
+    <a href="#top" class="flex items-center gap-2.5">
+      <img src="img/icon.png" alt="" width="32" height="32" class="rounded-lg">
+      <span class="font-display font-semibold">Peekashade</span>
+    </a>
+    <nav class="flex flex-wrap gap-x-6 gap-y-2 sm:ml-auto">
+      <a href="index.html" class="text-sm text-ink-soft transition hover:text-ink">Home</a>
+      <a href="privacy.html" class="text-sm text-ink-soft transition hover:text-ink">Privacy</a>
+      <a href="support.html" class="text-sm text-ink-soft transition hover:text-ink">Support</a>
     </nav>
   </div>
-</header>
-<svg class="blobs" viewBox="0 0 1200 620" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d="M600 -120 L140 620 L240 620 Z" fill="#ffc24a" opacity=".10"/><path d="M600 -120 L270 620 L370 620 Z" fill="#e8386f" opacity=".10"/><path d="M600 -120 L400 620 L500 620 Z" fill="#ffc24a" opacity=".10"/><path d="M600 -120 L530 620 L630 620 Z" fill="#e8386f" opacity=".10"/><path d="M600 -120 L660 620 L760 620 Z" fill="#ffc24a" opacity=".10"/><path d="M600 -120 L790 620 L890 620 Z" fill="#e8386f" opacity=".10"/><path d="M600 -120 L920 620 L1020 620 Z" fill="#ffc24a" opacity=".10"/><path d="M600 -120 L1050 620 L1150 620 Z" fill="#e8386f" opacity=".10"/></svg>
-<section class="hero">
-  <div class="wrap">
-    <div>
-      <span class="eyebrow">A shadow theatre for little hands</span>
-      <h1>Every shadow is waiting for its friend.</h1>
-      <p class="lede">Twelve little shows. Drag each character onto its shadow, and the curtain rises on the next one.</p>
-      <div class="hero-actions">
-        <a class="btn btn-main" href="#get"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c1-2 3-3 5-3 0 2-1 4-2 5M7 21c-2-2-3-6-2-9 1-2 3-3 5-3 1 0 2 .5 2 .5s1-.5 2-.5c2 0 4 1 5 3 1 3 0 7-2 9-1 1-2 1-3 0-1 0-2 0-3 0-1 1-2 1-4 0z"/></svg> Where to play</a>
-        <a class="btn btn-ghost" href="#features">What's inside</a>
-      </div>
-      <p class="meta">Ages 2–4 · one payment of $2.99 · no ads, no in-app purchases</p>
-    </div>
-    <div class="phone"><img src="img/1.png" alt="Peekashade on iPhone"></div>
-  </div>
-</section>
-
-<section class="band">
-  <div class="wrap">
-    <div class="rail">
-      <img src="img/1.png" alt="Peekashade screenshot 1" loading="lazy">
-      <img src="img/2.png" alt="Peekashade screenshot 2" loading="lazy">
-      <img src="img/3.png" alt="Peekashade screenshot 3" loading="lazy">
-      <img src="img/4.png" alt="Peekashade screenshot 4" loading="lazy">
-      <img src="img/5.png" alt="Peekashade screenshot 5" loading="lazy">
-      <img src="img/6.png" alt="Peekashade screenshot 6" loading="lazy">
-    </div>
-  </div>
-</section>
-
-<section id="features">
-  <div class="wrap">
-    <div class="section-head"><h2>A little theatre that never says no</h2><p>Made for the age when everything is still a first try.</p></div>
-    <div class="grid">
-      <div class="card"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="#e8386f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11V8a6 6 0 0 1 12 0v3M5 11h14v10H5z"/></svg></div><h3>Twelve shows</h3><p>Farm, jungle, ocean, road, sky, music, bugs, food, dinosaurs, home and weather — plus MIX, which shuffles them all.</p></div>
-      <div class="card"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="#e8386f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4zM17 8a5 5 0 0 1 0 8"/></svg></div><h3>88 friends, 88 sounds</h3><p>Every character is drawn and synthesised from scratch: the cow moos, the kettle whistles, the T. rex roars.</p></div>
-      <div class="card"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="#e8386f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v10H3zM7 19h10M12 15v4"/></svg></div><h3>Nobody loses</h3><p>No timer, no score, no game over. A wrong drop wobbles and comes back.</p></div>
-      <div class="card"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="#e8386f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 2h10v20H7zM11 18h2"/></svg></div><h3>Big pieces</h3><p>No rotation and a generous snap: land it near the shadow and it clicks into place.</p></div>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <div class="section-head"><h2>See it in motion</h2><p>Twenty seconds of the real game, recorded on device.</p></div>
-    <video class="video" src="img/preview.mp4" controls playsinline muted loop poster="img/1.png"></video>
-  </div>
-</section>
-<section class="band">
-  <div class="wrap">
-    <div class="section-head"><h2>How it works</h2><p>Three taps and a toddler is playing on their own.</p></div>
-    <div class="grid">
-      <div class="card"><div class="dot"><b style="color:#e8386f">1</b></div><h3>Pick a show</h3><p>Twelve posters at the ticket booth, each with its own stage and stars for the shows already done.</p></div>
-      <div class="card"><div class="dot"><b style="color:#e8386f">2</b></div><h3>Drag a piece</h3><p>Pieces grow as they lift and rise above the finger so nothing is hidden.</p></div>
-      <div class="card"><div class="dot"><b style="color:#e8386f">3</b></div><h3>Take a bow</h3><p>Complete the stage and everyone jumps up for a BRAVO before the curtain falls.</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="parents">
-  <div class="wrap">
-    <div class="section-head"><h2>Built to hand over without worrying</h2>
-      <p>Everything a parent usually has to check for, already answered.</p></div>
-    <div class="trust">
-      <div><svg viewBox="0 0 24 24" fill="none" stroke="#e8386f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v10H3zM7 19h10M12 15v4"/></svg><div><b>No ads, ever</b><span>Nothing blinks, nothing interrupts, nothing sells.</span></div></div>
-      <div><svg viewBox="0 0 24 24" fill="none" stroke="#e8386f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M8 7h6a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6M4 4l16 16"/></svg><div><b>No in-app purchases</b><span>One payment. Nothing is locked behind a paywall.</span></div></div>
-      <div><svg viewBox="0 0 24 24" fill="none" stroke="#e8386f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11V8a6 6 0 0 1 12 0v3M5 11h14v10H5z"/></svg><div><b>No data collected</b><span>No accounts, no analytics, no tracking of any kind.</span></div></div>
-      <div><svg viewBox="0 0 24 24" fill="none" stroke="#e8386f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8a16 16 0 0 1 20 0M5 12a11 11 0 0 1 14 0M8.5 15.5a6 6 0 0 1 7 0M12 20h.01M3 3l18 18"/></svg><div><b>Works offline</b><span>No network code at all: fine on a plane or in the car.</span></div></div>
-      <div><svg viewBox="0 0 24 24" fill="none" stroke="#e8386f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4zM17 8a5 5 0 0 1 0 8"/></svg><div><b>Gentle sound</b><span>Music sits under the effects, each with its own slider.</span></div></div>
-      <div><svg viewBox="0 0 24 24" fill="none" stroke="#e8386f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11V8a6 6 0 0 1 12 0v3M5 11h14v10H5z"/></svg><div><b>Grown-up gate</b><span>Settings and quitting need a two-second press.</span></div></div>
-    </div>
-  </div>
-</section>
-
-<section id="get" class="band">
-  <div class="wrap">
-    <div class="section-head"><h2>Where you can play</h2>
-      <p>Buy once on the App Store and it works on iPhone, iPad and Mac. Desktop and Android builds are on the way.</p></div>
-    <div class="plats">
-      <div class="plat"><svg viewBox="0 0 24 24" fill="none" stroke="#e8386f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 2h10v20H7zM11 18h2"/></svg><b>iPhone & iPad</b><span>iOS 15 or later</span><em>Coming soon</em></div>
-      <div class="plat"><svg viewBox="0 0 24 24" fill="none" stroke="#e8386f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v14H3zM3 9h18"/></svg><b>Mac</b><span>macOS 11 or later</span><em>Coming soon</em></div>
-      <div class="plat"><svg viewBox="0 0 24 24" fill="none" stroke="#e8386f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v14H3zM3 9h18"/></svg><b>Windows</b><span>Windows 10 or later</span><em>Coming soon</em></div>
-      <div class="plat"><svg viewBox="0 0 24 24" fill="none" stroke="#e8386f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v14H3zM3 9h18"/></svg><b>Linux</b><span>.deb and tar.gz</span><em>Coming soon</em></div>
-      <div class="plat"><svg viewBox="0 0 24 24" fill="none" stroke="#e8386f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 2h10v20H7zM11 18h2"/></svg><b>Android</b><span>Phones and tablets</span><em>Coming soon</em></div>
-    </div>
-  </div>
-</section>
-
-<section id="faq">
-  <div class="wrap">
-    <div class="section-head"><h2>Questions</h2></div>
-    <details><summary>What age is it for?</summary><p>Two to four. Toddlers who can drag a finger will manage on their own; younger ones enjoy the sounds with a grown-up.</p></details>
-    <details><summary>Is there any reading?</summary><p>None. Everything is shapes, shadows and sound.</p></details>
-    <details><summary>How long is a session?</summary><p>As long as you like. Each show is a couple of minutes and rolls straight into the next.</p></details>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <div class="closer">
-      <h2>Ready for the first show?</h2>
-      <p>One payment. Works on iPhone, iPad and Mac.</p>
-      <a class="btn btn-main" href="#get"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c1-2 3-3 5-3 0 2-1 4-2 5M7 21c-2-2-3-6-2-9 1-2 3-3 5-3 1 0 2 .5 2 .5s1-.5 2-.5c2 0 4 1 5 3 1 3 0 7-2 9-1 1-2 1-3 0-1 0-2 0-3 0-1 1-2 1-4 0z"/></svg> Get Peekashade</a>
-    </div>
-  </div>
-</section>
-<footer>
-  <div class="wrap">
-    <div><a href="index.html">Home</a><a href="privacy.html">Privacy</a><a href="support.html">Support</a></div>
-    <div>© 2026 Javier Báscones · made in Spain</div>
-  </div>
+  <p class="mx-auto max-w-6xl px-4 pb-10 text-sm text-ink-soft sm:px-6">
+    © 2026 Javier Báscones · made in Spain
+  </p>
 </footer>
+
+<script>
+  // El vídeo pesa 8 MB: no se precarga y sólo arranca cuando alguien lo pide.
+  // Al pulsar «See it in motion» se desplaza y empieza, que es lo que se espera.
+  document.querySelector('a[href="#motion"]')?.addEventListener('click', () => {
+    const v = document.querySelector('#motion video');
+    if (!v) return;
+    v.play?.().catch(() => {});   // si el navegador lo bloquea, quedan los controles
+  });
+
+  // Un <details name> agrupa el acordeón en los navegadores que lo soportan.
+  // En los que no, lo hacemos a mano para que no queden tres abiertos a la vez.
+  const soportaNombre = 'name' in document.createElement('details');
+  if (!soportaNombre) {
+    const items = [...document.querySelectorAll('details[name="faq"]')];
+    items.forEach(d => d.addEventListener('toggle', () => {
+      if (d.open) items.forEach(o => { if (o !== d) o.open = false; });
+    }));
+  }
+</script>
+
 </body>
 </html>
